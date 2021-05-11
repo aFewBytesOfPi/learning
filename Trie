@@ -1,0 +1,58 @@
+class Trie:
+    def __init__(self):
+        self.root = self.TrieNode()
+
+    class TrieNode:
+        def __init__(self):
+            self.children = {}
+            self.isEndOfWord = False  # End of word
+
+    ### Add one or more words ###
+    def add(self, *words):
+        for word in words:
+            self.addRecursion(self.root, word.lower(), 0)  # Begin recursion
+
+    ### Recursive method for adding words (adding one node per letter if that node doesn't already exist) ###
+    def addRecursion(self, current, word, index):  # current = a TrieNode (beginning with the root)
+        if index == len(word):  # Checks if the current position in the Trie is equal to the length of the word to add
+            current.isEndOfWord = True  # If so, mark that node as an "end of word"
+            return  # recursion bye bye
+
+        ch = word[index]  # current letter of the word
+        try:
+            node = current.children[ch]  # next node
+        except KeyError:  # equivalent of saying "if(node == Null)" in Java; using "if node is None" doesn't work in Python
+            node = self.TrieNode()  # Create a new TrieNode
+            current.children[ch] = node  # Add the new TrieNode to the current node's dictionary of children
+        self.addRecursion(node, word, index+1)  # move on to the next letter in the word
+
+    ### Search if a word is in the Trie ###
+    def search(self, word):
+        return self.searchRecursion(self.root, word.lower(), 0)  # Begin recursion
+
+    ### Recursive method for searching (traverse the Trie one letter/node at a time) ###
+    def searchRecursion(self, current, word, index):
+        if index == len(word):  # Checks if current position in the Trie is equal to the length of the word to search for
+            return current.isEndOfWord  # If so, return whether or not the current position marks the end of a word
+
+        ch = word[index]  # current letter in the word
+
+        try:
+            node = current.children[ch]  # current node
+        except KeyError:
+            return False  # If there is a KeyError, that means the node that corresponds with the current letter doesn't exist. Thus, the word we are searching for doesn't exist in the Trie.
+        return self.searchRecursion(node, word, index+1)  # move on to the next letter
+
+
+"""
+Example code to test this out:
+
+trie = Trie()
+trie.add('fish', 'hello', 'help', 'fist', 'helper', 'helping')
+
+print(f"Are the following words in the Trie?\n"
+      f"\tFish: {trie.search('fish')}\n"
+      f"\tHelper: {trie.search('helper')}\n"
+      f"\tFloor: {trie.search('Floor')}")
+
+"""
